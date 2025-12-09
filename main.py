@@ -222,6 +222,8 @@ def newton(
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
     if isinstance(a, (int, float)) and isinstance(b, (int, float)) and isinstance(epsilon, float) and epsilon > 0 and isinstance(max_iter, int) and max_iter > 0:
+        if f(a) * f(b) > 0:
+            return None
         if f(b) * ddf(b) > 0:
             x0 = b
         else:
