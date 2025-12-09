@@ -103,7 +103,23 @@ def bisection(
             - Liczba wykonanych iteracji.
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
-    pass
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)) and a < b:
+        fa = f(a)
+        fb = f(b)
+        if fa * fb > 0:
+            return None
+        for i in range(1, max_iter + 1):
+            c = (a + b) / 2
+            fc = f(c)
+            if abs(fc) < epsilon or (b - a) / 2 < epsilon:
+                return c, i
+            if fa * fc < 0:
+                b = c
+                fb = fc
+            else:
+                a = c
+                fa = fc
+    return None
 
 
 def secant(
@@ -130,7 +146,28 @@ def secant(
             - Liczba wykonanych iteracji.
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
-    pass
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)) and isinstance(epsilon, float) and epsilon > 0 and isinstance(max_iters, int) and max_iters > 0 and callable(f) and a != b:
+        x0 = float(a)
+        x1 = float(b)
+        f0 = f(x0)
+        f1 = f(x1)
+        if abs(f0) <= epsilon: return x0, 0
+        if abs(f1) <= epsilon: return x1, 0
+        for i in range(1, max_iters+1):
+            d = f1 - f0
+            if abs(d) < 1e-15:
+                return None
+
+            x2 = x1 - f1 * (x1 - x0) / (d)
+            f2 = f(x2)
+            if abs(f2) < epsilon:
+                return x2, i
+            if f0 * f2 < 0:
+                x1, f1 = x2, f2
+            else:
+                x0, f0 = x2, f2
+        return x1, max_iters
+    return None
 
 
 def difference_quotient(
@@ -150,7 +187,9 @@ def difference_quotient(
         (float): Wartość ilorazu różnicowego.
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
-    pass
+    if isinstance(f, Callable) and isinstance(x, (int, float)) and isinstance(h, (int, float)) and h != 0:
+        return (f(x + h) - f(x)) / h
+    return None 
 
 
 def newton(
@@ -182,4 +221,18 @@ def newton(
             - Liczba wykonanych iteracji.
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
-    pass
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)) and isinstance(epsilon, float) and epsilon > 0 and isinstance(max_iter, int) and max_iter > 0:
+        if f(b) * ddf(b) > 0:
+            x0 = b
+        else:
+            x0 = a
+        for i in range(1, max_iter + 1):
+            dfx0 = df(x0)
+            if abs(dfx0) < 1e-15:
+                return None
+            x1 = x0 - f(x0) / dfx0
+            if abs(f(x1)) < epsilon:
+                return x1, i
+            x0 = x1
+        return x0, max_iter
+    return None
